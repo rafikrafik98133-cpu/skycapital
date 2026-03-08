@@ -3,23 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sky Capital</title>
+    <title>Небесная столица</title>
     <style>
-        body { background: #05070a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        #balance { font-size: 60px; font-weight: 900; color: #00d4ff; margin: 10px 0; }
-        .circle { width: 280px; height: 280px; border-radius: 50%; border: 10px solid #8b4513; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a2a3a, #000); cursor: pointer; transition: transform 0.05s; }
-        .circle:active { transform: scale(0.95); }
-        .circle img { width: 85%; pointer-events: none; }
+        body { 
+            background: radial-gradient(circle, #0f172a 0%, #020617 100%); 
+            color: white; 
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden; 
+        }
+        #баланс { 
+            font-size: 80px; 
+            font-weight: 900; 
+            color: #38bdf8; 
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+            margin-bottom: 20px;
+        }
+        .круг { 
+            width: 280px; 
+            height: 280px; 
+            border-radius: 50%; 
+            border: 8px solid #1e293b; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background: rgba(30, 41, 59, 0.5);
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.2);
+            cursor: pointer; 
+            transition: transform 0.1s ease;
+        }
+        .круг:active { transform: scale(0.92); }
+        .круг img { width: 70%; filter: drop-shadow(0 0 10px #38bdf8); }
     </style>
 </head>
 <body>
-    <div id="balance">0</div>
-    <div class="circle" id="btn"><img src="https://i.imgur.com/uG9R2Ym.png"></div>
+    <div id="баланс">0</div>
+    <div class="круг" id="кнопка">
+        <img src="https://cdn-icons-png.flaticon.com/512/784/784567.png" alt="Самолет">
+    </div>
     <script>
-        let score = 0;
-        document.getElementById('btn').onclick = () => {
-            score++;
-            document.getElementById('balance').innerText = score;
+        let счётчик = 0;
+        const кнопка = document.getElementById('кнопка');
+        const баланс = document.getElementById('баланс');
+        
+        кнопка.onclick = () => {
+            счётчик++;
+            баланс.innerText = счётчик;
+            if (navigator.vibrate) navigator.vibrate(10);
         };
     </script>
 </body>
