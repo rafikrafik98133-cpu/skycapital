@@ -3,21 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sky Capital</title>
+    <title>Sky Capital - Shop Edition</title>
     <style>
-        body { background: radial-gradient(circle, #0f172a 0%, #020617 100%); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        body { background: radial-gradient(circle, #0f172a 0%, #020617 100%); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; overflow-x: hidden; }
         #stats { text-align: center; margin-bottom: 10px; }
         #league { font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; transition: color 0.5s; }
         #plane-name { font-size: 26px; font-weight: 800; color: #38bdf8; margin: 5px 0; }
         #balance { font-size: 45px; font-weight: 900; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); margin: 5px 0; }
-        .circle { width: 260px; height: 260px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: rgba(30, 41, 59, 0.6); cursor: pointer; transition: all 0.3s ease; border: 10px solid; }
+        
+        .circle { 
+            width: 260px; height: 260px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            background: rgba(30, 41, 59, 0.6); 
+            cursor: pointer; transition: all 0.3s ease; 
+            border: 10px solid; 
+            -webkit-tap-highlight-color: transparent;
+        }
         .circle:active { transform: scale(0.92); }
-        .circle img { width: 80%; pointer-events: none; }
+        .circle .plane-icon { font-size: 120px; pointer-events: none; }
+
         #info { font-size: 14px; color: #94a3b8; margin: 15px 0; text-align: center; }
-        #timer { color: #fbbf24; font-weight: bold; min-height: 20px; }
-        #shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 360px; }
-        .oil-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 12px 5px; border-radius: 12px; cursor: pointer; font-size: 11px; }
-        .oil-btn b { color: #38bdf8; display: block; font-size: 13px; }
+        #timer { color: #fbbf24; font-weight: bold; min-height: 20px; margin-bottom: 10px; }
+
+        /* Кнопка открытия магазина */
+        #shop-toggle {
+            background: #38bdf8; color: #020617; border: none; padding: 12px 30px;
+            font-weight: bold; border-radius: 50px; cursor: pointer; font-size: 16px;
+            margin-top: 10px; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+
+        /* Окно магазина */
+        #shop-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.95); z-index: 100;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        #shop-content {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            width: 90%; max-width: 400px; padding: 20px;
+        }
+        .oil-btn { 
+            background: #1e293b; border: 1px solid #334155; color: white; 
+            padding: 15px 10px; border-radius: 15px; cursor: pointer; font-size: 12px;
+            text-align: center;
+        }
+        .oil-btn b { color: #38bdf8; display: block; font-size: 14px; margin-bottom: 5px; }
+        #close-shop { margin-top: 30px; color: #94a3b8; text-decoration: underline; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -27,13 +58,24 @@
         <div id="balance">0</div>
         <div id="timer"></div>
     </div>
-    <div class="circle" id="click-btn"><img src="https://cdn-icons-png.flaticon.com/512/5732/5732045.png" id="plane-img"></div>
+
+    <div class="circle" id="click-btn">
+        <div class="plane-icon" id="plane-img">✈️</div>
+    </div>
+
     <div id="info">Клик: <span id="pwr">+1</span> | В час: <span id="afk">100</span></div>
-    <div id="shop">
-        <button class="oil-btn" onclick="buyOil(10000, 0.05)"><b>ОБЫЧНОЕ</b>10к (5%)</button>
-        <button class="oil-btn" onclick="buyOil(100000, 0.1)"><b>КАЧЕСТВЕННОЕ</b>100к (10%)</button>
-        <button class="oil-btn" onclick="buyOil(1000000, 0.2)"><b>УЛЬТРА</b>1М (20%)</button>
-        <button class="oil-btn" onclick="buyOil(10000000, 0.4)"><b>КОСМИЧЕСКОЕ</b>10М (40%)</button>
+
+    <button id="shop-toggle" onclick="toggleShop(true)">🛒 МАГАЗИН</button>
+
+    <div id="shop-overlay">
+        <h2 style="color: #38bdf8;">МАГАЗИН МАСЕЛ</h2>
+        <div id="shop-content">
+            <button class="oil-btn" onclick="buyOil(10000, 0.05)"><b>ОБЫЧНОЕ</b>10к (5%)</button>
+            <button class="oil-btn" onclick="buyOil(100000, 0.1)"><b>КАЧЕСТВЕННОЕ</b>100к (10%)</button>
+            <button class="oil-btn" onclick="buyOil(1000000, 0.2)"><b>УЛЬТРА</b>1М (20%)</button>
+            <button class="oil-btn" onclick="buyOil(10000000, 0.4)"><b>КОСМИЧЕСКОЕ</b>10М (40%)</button>
+        </div>
+        <div id="close-shop" onclick="toggleShop(false)">ЗАКРЫТЬ</div>
     </div>
 
     <script>
@@ -42,17 +84,21 @@
         let oilBonus = parseFloat(localStorage.getItem('sky_oilBonus')) || 0;
 
         const levels = [
-            { lim: 0, n: "МиГ-9", l: "Деревянная лига", p: 1, a: 100, c: "#8b4513", img: "https://cdn-icons-png.flaticon.com/512/5732/5732045.png" },
-            { lim: 1000, n: "МиГ-21", l: "Бронзовая лига", p: 2, a: 500, c: "#cd7f32", img: "https://cdn-icons-png.flaticon.com/512/5732/5732041.png" },
-            { lim: 10000, n: "МиГ-23", l: "Бронзовая лига", p: 3, a: 1500, c: "#cd7f32", img: "https://cdn-icons-png.flaticon.com/512/5732/5732104.png" },
-            { lim: 100000, n: "МиГ-29СМТ", l: "Бронзовая лига", p: 4, a: 4000, c: "#cd7f32", img: "https://cdn-icons-png.flaticon.com/512/784/784567.png" },
-            { lim: 500000, n: "Су-27СМ3", l: "Серебряная лига", p: 5, a: 15000, c: "#c0c0c0", img: "https://cdn-icons-png.flaticon.com/512/1110/1110500.png" },
-            { lim: 5000000, n: "МиГ-31БМ", l: "Серебряная лига", p: 6, a: 50000, c: "#c0c0c0", img: "https://cdn-icons-png.flaticon.com/512/1000/1000957.png" },
-            { lim: 50000000, n: "Су-30СМ2", l: "Серебряная лига", p: 7, a: 150000, c: "#c0c0c0", img: "https://cdn-icons-png.flaticon.com/512/3211/3211514.png" },
-            { lim: 100000000, n: "Су-35С", l: "Золотая лига", p: 8, a: 800000, c: "#ffd700", img: "https://cdn-icons-png.flaticon.com/512/1806/1806555.png" },
-            { lim: 500000000, n: "Су-57", l: "Золотая лига", p: 9, a: 5000000, c: "#ffd700", img: "https://cdn-icons-png.flaticon.com/512/2800/2800474.png" },
-            { lim: 1000000000, n: "Су-57М", l: "Алмазная лига", p: 10, a: 25000000, c: "#b9f2ff", img: "https://cdn-icons-png.flaticon.com/512/4769/4769248.png" }
+            { lim: 0, n: "МиГ-9", l: "Деревянная лига", p: 1, a: 100, c: "#8b4513", img: "✈️" },
+            { lim: 1000, n: "МиГ-21", l: "Бронзовая лига", p: 2, a: 500, c: "#cd7f32", img: "🛫" },
+            { lim: 10000, n: "МиГ-23", l: "Бронзовая лига", p: 3, a: 1500, c: "#cd7f32", img: "🛬" },
+            { lim: 100000, n: "МиГ-29СМТ", l: "Бронзовая лига", p: 4, a: 4000, c: "#cd7f32", img: "🚀" },
+            { lim: 500000, n: "Су-27СМ3", l: "Серебряная лига", p: 5, a: 15000, c: "#c0c0c0", img: "🛸" },
+            { lim: 5000000, n: "МиГ-31БМ", l: "Серебряная лига", p: 6, a: 50000, c: "#c0c0c0", img: "🌟" },
+            { lim: 50000000, n: "Су-30СМ2", l: "Серебряная лига", p: 7, a: 150000, c: "#c0c0c0", img: "✨" },
+            { lim: 100000000, n: "Су-35С", l: "Золотая лига", p: 8, a: 800000, c: "#ffd700", img: "🏆" },
+            { lim: 500000000, n: "Су-57", l: "Золотая лига", p: 9, a: 5000000, c: "#ffd700", img: "💎" },
+            { lim: 1000000000, n: "Су-57М", l: "Алмазная лига", p: 10, a: 25000000, c: "#b9f2ff", img: "👑" }
         ];
+
+        function toggleShop(show) {
+            document.getElementById('shop-overlay').style.display = show ? 'flex' : 'none';
+        }
 
         function updateUI() {
             let cur = levels[0];
@@ -65,7 +111,7 @@
             document.getElementById('league').style.color = cur.c;
             document.getElementById('pwr').innerText = "+" + cur.p;
             document.getElementById('afk').innerText = Math.floor(cur.a * (1 + bonus)).toLocaleString();
-            document.getElementById('plane-img').src = cur.img;
+            document.getElementById('plane-img').innerText = cur.img;
             document.getElementById('click-btn').style.borderColor = cur.c;
             if (now < oilEnd) {
                 let d = Math.floor((oilEnd - now) / 1000);
@@ -75,7 +121,10 @@
         }
 
         function buyOil(p, b) {
-            if (score >= p) { score -= p; oilEnd = Date.now() + 3600000; oilBonus = b; updateUI(); }
+            if (score >= p) { 
+                score -= p; oilEnd = Date.now() + 3600000; oilBonus = b; 
+                toggleShop(false); updateUI(); 
+            } else { alert("Недостаточно коинов!"); }
         }
 
         document.getElementById('click-btn').onclick = () => {
@@ -91,7 +140,7 @@
             score += (cur.a * (1 + bonus)) / 3600; updateUI();
         }, 1000);
 
-        updateUI();
+            updateUI();
     </script>
 </body>
 </html>
