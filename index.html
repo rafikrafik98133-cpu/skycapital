@@ -3,144 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sky Capital - Shop Edition</title>
+    <title>Sky Capital Elite</title>
     <style>
-        body { background: radial-gradient(circle, #0f172a 0%, #020617 100%); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; overflow-x: hidden; }
-        #stats { text-align: center; margin-bottom: 10px; }
-        #league { font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; transition: color 0.5s; }
-        #plane-name { font-size: 26px; font-weight: 800; color: #38bdf8; margin: 5px 0; }
-        #balance { font-size: 45px; font-weight: 900; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); margin: 5px 0; }
+        :root { --main-blue: #38bdf8; --bg-dark: #020617; }
+        body { background: var(--bg-dark); color: white; font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
         
+        #stats { margin-top: 30px; text-align: center; z-index: 2; }
+        #league { font-size: 14px; text-transform: uppercase; letter-spacing: 3px; opacity: 0.8; margin-bottom: 5px; }
+        #plane-name { font-size: 28px; font-weight: 900; color: var(--main-blue); text-shadow: 0 0 15px var(--main-blue); }
+        #balance { font-size: 55px; font-weight: 900; margin: 10px 0; background: linear-gradient(to bottom, #fff, var(--main-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Центральный круг с неоном */
+        .circle-container { position: relative; margin: 30px 0; }
         .circle { 
-            width: 260px; height: 260px; border-radius: 50%; 
+            width: 280px; height: 280px; border-radius: 50%; 
             display: flex; justify-content: center; align-items: center; 
-            background: rgba(30, 41, 59, 0.6); 
-            cursor: pointer; transition: all 0.3s ease; 
-            border: 10px solid; 
-            -webkit-tap-highlight-color: transparent;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px);
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid; position: relative; -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 0 50px rgba(56, 189, 248, 0.1);
         }
-        .circle:active { transform: scale(0.92); }
-        .circle .plane-icon { font-size: 120px; pointer-events: none; }
+        .circle:active { transform: scale(0.95); box-shadow: 0 0 80px var(--main-blue); }
+        .plane-icon { font-size: 130px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
 
-        #info { font-size: 14px; color: #94a3b8; margin: 15px 0; text-align: center; }
-        #timer { color: #fbbf24; font-weight: bold; min-height: 20px; margin-bottom: 10px; }
+        /* Панель инфо */
+        .info-panel { 
+            background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px 40px; border-radius: 20px; display: flex; gap: 30px;
+            backdrop-filter: blur(5px); margin-bottom: 20px;
+        }
+        .info-item { text-align: center; }
+        .info-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; }
+        .info-value { font-size: 18px; font-weight: bold; color: var(--main-blue); }
 
-        /* Кнопка открытия магазина */
+        /* Кнопка магазина */
         #shop-toggle {
-            background: #38bdf8; color: #020617; border: none; padding: 12px 30px;
-            font-weight: bold; border-radius: 50px; cursor: pointer; font-size: 16px;
-            margin-top: 10px; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            background: linear-gradient(135deg, var(--main-blue), #0ea5e9);
+            color: white; border: none; padding: 15px 50px; font-weight: bold;
+            border-radius: 15px; cursor: pointer; text-transform: uppercase;
+            letter-spacing: 1px; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
+            transition: 0.3s;
         }
+        #shop-toggle:hover { transform: translateY(-3px); }
 
-        /* Окно магазина */
+        /* Магазин */
         #shop-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.95); z-index: 100;
-            flex-direction: column; align-items: center; justify-content: center;
+            background: rgba(2, 6, 23, 0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center;
         }
-        #shop-content {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-            width: 90%; max-width: 400px; padding: 20px;
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; }
+        .oil-card { 
+            background: #0f172a; border: 1px solid #1e293b; padding: 20px 10px;
+            border-radius: 20px; text-align: center; transition: 0.3s;
         }
-        .oil-btn { 
-            background: #1e293b; border: 1px solid #334155; color: white; 
-            padding: 15px 10px; border-radius: 15px; cursor: pointer; font-size: 12px;
-            text-align: center;
-        }
-        .oil-btn b { color: #38bdf8; display: block; font-size: 14px; margin-bottom: 5px; }
-        #close-shop { margin-top: 30px; color: #94a3b8; text-decoration: underline; cursor: pointer; }
+        .oil-card:active { border-color: var(--main-blue); background: #1e293b; }
+        .oil-card b { display: block; color: var(--main-blue); margin-bottom: 5px; font-size: 16px; }
+
+        #timer { color: #fbbf24; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
+        .close-btn { margin-top: 40px; color: #64748b; cursor: pointer; }
     </style>
 </head>
 <body>
     <div id="stats">
-        <div id="league">Деревянная лига</div>
-        <div id="plane-name">МиГ-9</div>
+        <div id="league">Загрузка протокола...</div>
+        <div id="plane-name">---</div>
         <div id="balance">0</div>
         <div id="timer"></div>
-    </div>
-
-    <div class="circle" id="click-btn">
-        <div class="plane-icon" id="plane-img">✈️</div>
-    </div>
-
-    <div id="info">Клик: <span id="pwr">+1</span> | В час: <span id="afk">100</span></div>
-
-    <button id="shop-toggle" onclick="toggleShop(true)">🛒 МАГАЗИН</button>
-
-    <div id="shop-overlay">
-        <h2 style="color: #38bdf8;">МАГАЗИН МАСЕЛ</h2>
-        <div id="shop-content">
-            <button class="oil-btn" onclick="buyOil(10000, 0.05)"><b>ОБЫЧНОЕ</b>10к (5%)</button>
-            <button class="oil-btn" onclick="buyOil(100000, 0.1)"><b>КАЧЕСТВЕННОЕ</b>100к (10%)</button>
-            <button class="oil-btn" onclick="buyOil(1000000, 0.2)"><b>УЛЬТРА</b>1М (20%)</button>
-            <button class="oil-btn" onclick="buyOil(10000000, 0.4)"><b>КОСМИЧЕСКОЕ</b>10М (40%)</button>
-        </div>
-        <div id="close-shop" onclick="toggleShop(false)">ЗАКРЫТЬ</div>
-    </div>
-
-    <script>
-        let score = parseFloat(localStorage.getItem('sky_score')) || 0;
-        let oilEnd = parseInt(localStorage.getItem('sky_oilEnd')) || 0;
-        let oilBonus = parseFloat(localStorage.getItem('sky_oilBonus')) || 0;
-
-        const levels = [
-            { lim: 0, n: "МиГ-9", l: "Деревянная лига", p: 1, a: 100, c: "#8b4513", img: "✈️" },
-            { lim: 1000, n: "МиГ-21", l: "Бронзовая лига", p: 2, a: 500, c: "#cd7f32", img: "🛫" },
-            { lim: 10000, n: "МиГ-23", l: "Бронзовая лига", p: 3, a: 1500, c: "#cd7f32", img: "🛬" },
-            { lim: 100000, n: "МиГ-29СМТ", l: "Бронзовая лига", p: 4, a: 4000, c: "#cd7f32", img: "🚀" },
-            { lim: 500000, n: "Су-27СМ3", l: "Серебряная лига", p: 5, a: 15000, c: "#c0c0c0", img: "🛸" },
-            { lim: 5000000, n: "МиГ-31БМ", l: "Серебряная лига", p: 6, a: 50000, c: "#c0c0c0", img: "🌟" },
-            { lim: 50000000, n: "Су-30СМ2", l: "Серебряная лига", p: 7, a: 150000, c: "#c0c0c0", img: "✨" },
-            { lim: 100000000, n: "Су-35С", l: "Золотая лига", p: 8, a: 800000, c: "#ffd700", img: "🏆" },
-            { lim: 500000000, n: "Су-57", l: "Золотая лига", p: 9, a: 5000000, c: "#ffd700", img: "💎" },
-            { lim: 1000000000, n: "Су-57М", l: "Алмазная лига", p: 10, a: 25000000, c: "#b9f2ff", img: "👑" }
-        ];
-
-        function toggleShop(show) {
-            document.getElementById('shop-overlay').style.display = show ? 'flex' : 'none';
-        }
-
-        function updateUI() {
-            let cur = levels[0];
-            for (let i = levels.length - 1; i >= 0; i--) if (score >= levels[i].lim) { cur = levels[i]; break; }
-            let now = Date.now();
-            let bonus = (now < oilEnd) ? oilBonus : 0;
-            document.getElementById('balance').innerText = Math.floor(score).toLocaleString();
-            document.getElementById('plane-name').innerText = cur.n;
-            document.getElementById('league').innerText = cur.l;
-            document.getElementById('league').style.color = cur.c;
-            document.getElementById('pwr').innerText = "+" + cur.p;
-            document.getElementById('afk').innerText = Math.floor(cur.a * (1 + bonus)).toLocaleString();
-            document.getElementById('plane-img').innerText = cur.img;
-            document.getElementById('click-btn').style.borderColor = cur.c;
-            if (now < oilEnd) {
-                let d = Math.floor((oilEnd - now) / 1000);
-                document.getElementById('timer').innerText = `Масло: ${Math.floor(d/60)}:${(d%60).toString().padStart(2,'0')}`;
-            } else document.getElementById('timer').innerText = "";
-            localStorage.setItem('sky_score', score);
-        }
-
-        function buyOil(p, b) {
-            if (score >= p) { 
-                score -= p; oilEnd = Date.now() + 3600000; oilBonus = b; 
-                toggleShop(false); updateUI(); 
-            } else { alert("Недостаточно коинов!"); }
-        }
-
-        document.getElementById('click-btn').onclick = () => {
-            let curP = 1;
-            for (let i = levels.length - 1; i >= 0; i--) if (score >= levels[i].lim) { curP = levels[i].p; break; }
-            score += curP; updateUI();
-        };
-
-        setInterval(() => {
-            let cur = levels[0];
-            for (let i = levels.length - 1; i >= 0; i--) if (score >= levels[i].lim) { cur = levels[i]; break; }
-            let bonus = (Date.now() < oilEnd) ? oilBonus : 0;
-            score += (cur.a * (1 + bonus)) / 3600; updateUI();
-        }, 1000);
-
-            updateUI();
-    </script>
-</body>
-</html>
+        
