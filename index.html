@@ -3,59 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Небесная столица</title>
+    <title>Sky Capital</title>
     <style>
-        body { 
-            background: radial-gradient(circle, #0f172a 0%, #020617 100%); 
-            color: white; 
-            font-family: sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden; 
-        }
-        #баланс { 
-            font-size: 80px; 
-            font-weight: 900; 
-            color: #38bdf8; 
-            text-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
-            margin-bottom: 20px;
-        }
-        .круг { 
-            width: 280px; 
-            height: 280px; 
-            border-radius: 50%; 
-            border: 8px solid #1e293b; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            background: rgba(30, 41, 59, 0.5);
-            box-shadow: 0 0 50px rgba(56, 189, 248, 0.2);
-            cursor: pointer; 
-            transition: transform 0.1s ease;
-        }
-        .круг:active { transform: scale(0.92); }
-        .круг img { width: 70%; filter: drop-shadow(0 0 10px #38bdf8); }
+        body { background: radial-gradient(circle, #0f172a 0%, #020617 100%); color: white; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        #stats { text-align: center; margin-bottom: 10px; }
+        #league { font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; transition: color 0.5s; }
+        #plane-name { font-size: 26px; font-weight: 800; color: #38bdf8; margin: 5px 0; }
+        #balance { font-size: 45px; font-weight: 900; text-shadow: 0 0 15px rgba(56, 189, 248, 0.4); margin: 5px 0; }
+        .circle { width: 260px; height: 260px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background: rgba(30, 41, 59, 0.6); cursor: pointer; transition: all 0.3s ease; border: 10px solid; }
+        .circle:active { transform: scale(0.92); }
+        .circle img { width: 80%; pointer-events: none; }
+        #info { font-size: 14px; color: #94a3b8; margin: 15px 0; text-align: center; }
+        #timer { color: #fbbf24; font-weight: bold; min-height: 20px; }
+        #shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 360px; }
+        .oil-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 12px 5px; border-radius: 12px; cursor: pointer; font-size: 11px; }
+        .oil-btn b { color: #38bdf8; display: block; font-size: 13px; }
     </style>
 </head>
 <body>
-    <div id="баланс">0</div>
-    <div class="круг" id="кнопка">
-        <img src="https://cdn-icons-png.flaticon.com/512/784/784567.png" alt="Самолет">
+    <div id="stats">
+        <div id="league">Деревянная лига</div>
+        <div id="plane-name">МиГ-9</div>
+        <div id="balance">0</div>
+        <div id="timer"></div>
     </div>
+    <div class="circle" id="click-btn"><img src="https://cdn-icons-png.flaticon.com/512/5732/5732045.png" id="plane-img"></div>
+    <div id="info">Клик: <span id="pwr">+1</span> | В час: <span id="afk">100</span></div>
+    <div id="shop">
+        <button class="oil-btn" onclick="buyOil(10000, 0.05)"><b>ОБЫЧНОЕ</b>10к (5%)</button>
+        <button class="oil-btn" onclick="buyOil(100000, 0.1)"><b>КАЧЕСТВЕННОЕ</b>100к (10%)</button>
+        <button class="oil-btn" onclick="buyOil(1000000, 0.2)"><b>УЛЬТРА</b>1М (20%)</button>
+        <button class="oil-btn" onclick="buyOil(10000000, 0.4)"><b>КОСМИЧЕСКОЕ</b>10М (40%)</button>
+    </div>
+
     <script>
-        let счётчик = 0;
-        const кнопка = document.getElementById('кнопка');
-        const баланс = document.getElementById('баланс');
-        
-        кнопка.onclick = () => {
-            счётчик++;
-            баланс.innerText = счётчик;
-            if (navigator.vibrate) navigator.vibrate(10);
+        let score = parseFloat(localStorage.getItem('sky_score')) || 0;
+        let oilEnd = parseInt(localStorage.getItem('sky_oilEnd')) || 0;
+        let oilBonus = parseFloat(localStorage.getItem('sky_oilBonus')) || 0;
+
+        const levels = [
+            { lim: 0, n: "МиГ-9", l: "Деревянная лига", p: 1, a: 100, c: "#8b4513", img: "https://cdn-icons-png.flaticon.com/512/5732/5732045.png" },
+            { lim: 1000, n: "МиГ-21", l: "Бронзовая лига", p: 2, a: 500, c: "#cd7f32", img: "https://cdn-icons-png.flaticon.com/512/5732/5732041.png" },
+            { lim: 10000, n: "МиГ-23", l: "Бронзовая лига", p: 3, a: 1500, c: "#cd7f32", img: "https://cdn-icons-png.flaticon.com/512/5732/5732104.png" },
+            { lim: 100000, n: "МиГ-29СМТ", l: "Бронзовая лига", p: 4, a: 4000, c: "#cd7f32", img: "https://cdn-icons-png.flaticon.com/512/784/784567.png" },
+            { lim: 500000, n: "Су-27СМ3", l: "Серебряная лига", p: 5, a: 15000, c: "#c0c0c0", img: "https://cdn-icons-png.flaticon.com/512/1110/1110500.png" },
+            { lim: 5000000, n: "МиГ-31БМ", l: "Серебряная лига", p: 6, a: 50000, c: "#c0c0c0", img: "https://cdn-icons-png.flaticon.com/512/1000/1000957.png" },
+            { lim: 50000000, n: "Су-30СМ2", l: "Серебряная лига", p: 7, a: 150000, c: "#c0c0c0", img: "https://cdn-icons-png.flaticon.com/512/3211/3211514.png" },
+            { lim: 100000000, n: "Су-35С", l: "Золотая лига", p: 8, a: 800000, c: "#ffd700", img: "https://cdn-icons-png.flaticon.com/512/1806/1806555.png" },
+            { lim: 500000000, n: "Су-57", l: "Золотая лига", p: 9, a: 5000000, c: "#ffd700", img: "https://cdn-icons-png.flaticon.com/512/2800/2800474.png" },
+            { lim: 1000000000, n: "Су-57М", l: "Алмазная лига", p: 10, a: 25000000, c: "#b9f2ff", img: "https://cdn-icons-png.flaticon.com/512/4769/4769248.png" }
+        ];
+
+        function updateUI() {
+            let cur = levels[0];
+            for (let i = levels.length - 1; i >= 0; i--) if (score >= levels[i].lim) { cur = levels[i]; break; }
+            let now = Date.now();
+            let bonus = (now < oilEnd) ? oilBonus : 0;
+            document.getElementById('balance').innerText = Math.floor(score).toLocaleString();
+            document.getElementById('plane-name').innerText = cur.n;
+            document.getElementById('league').innerText = cur.l;
+            document.getElementById('league').style.color = cur.c;
+            document.getElementById('pwr').innerText = "+" + cur.p;
+            document.getElementById('afk').innerText = Math.floor(cur.a * (1 + bonus)).toLocaleString();
+            document.getElementById('plane-img').src = cur.img;
+            document.getElementById('click-btn').style.borderColor = cur.c;
+            if (now < oilEnd) {
+                let d = Math.floor((oilEnd - now) / 1000);
+                document.getElementById('timer').innerText = `Масло: ${Math.floor(d/60)}:${(d%60).toString().padStart(2,'0')}`;
+            } else document.getElementById('timer').innerText = "";
+            localStorage.setItem('sky_score', score);
+        }
+
+        function buyOil(p, b) {
+            if (score >= p) { score -= p; oilEnd = Date.now() + 3600000; oilBonus = b; updateUI(); }
+        }
+
+        document.getElementById('click-btn').onclick = () => {
+            let curP = 1;
+            for (let i = levels.length - 1; i >= 0; i--) if (score >= levels[i].lim) { curP = levels[i].p; break; }
+            score += curP; updateUI();
         };
+
+        setInterval(() => {
+            let cur = levels[0];
+            for (let i = levels.length - 1; i >= 0; i--) if (score >= levels[i].lim) { cur = levels[i]; break; }
+            let bonus = (Date.now() < oilEnd) ? oilBonus : 0;
+            score += (cur.a * (1 + bonus)) / 3600; updateUI();
+        }, 1000);
+
+        updateUI();
     </script>
 </body>
 </html>
