@@ -3,70 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Sky Capital Elite</title>
+    <title>Sky Capital FIX</title>
     <style>
-        :root { --main-blue: #38bdf8; --bg-dark: #020617; }
-        body { background: var(--bg-dark); color: white; font-family: 'Orbitron', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; overflow: hidden; }
-        
-        #stats { margin-top: 30px; text-align: center; z-index: 2; }
-        #league { font-size: 14px; text-transform: uppercase; letter-spacing: 3px; opacity: 0.8; margin-bottom: 5px; }
-        #plane-name { font-size: 28px; font-weight: 900; color: var(--main-blue); text-shadow: 0 0 15px var(--main-blue); }
-        #balance { font-size: 55px; font-weight: 900; margin: 10px 0; background: linear-gradient(to bottom, #fff, var(--main-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* Центральный круг с неоном */
-        .circle-container { position: relative; margin: 30px 0; }
+        body { background: #020617; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        #stats { text-align: center; margin-top: 20px; }
+        #league { font-size: 14px; color: #38bdf8; text-transform: uppercase; letter-spacing: 2px; }
+        #plane-name { font-size: 26px; font-weight: bold; margin: 5px 0; }
+        #balance { font-size: 50px; font-weight: 900; color: #fff; margin: 10px 0; }
         .circle { 
-            width: 280px; height: 280px; border-radius: 50%; 
+            width: 260px; height: 260px; border-radius: 50%; border: 8px solid #38bdf8;
             display: flex; justify-content: center; align-items: center; 
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px);
-            cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 4px solid; position: relative; -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 0 50px rgba(56, 189, 248, 0.1);
+            background: #0f172a; cursor: pointer; -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2); transition: 0.1s;
         }
-        .circle:active { transform: scale(0.95); box-shadow: 0 0 80px var(--main-blue); }
-        .plane-icon { font-size: 130px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
-
-        /* Панель инфо */
-        .info-panel { 
-            background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px 40px; border-radius: 20px; display: flex; gap: 30px;
-            backdrop-filter: blur(5px); margin-bottom: 20px;
-        }
-        .info-item { text-align: center; }
-        .info-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; }
-        .info-value { font-size: 18px; font-weight: bold; color: var(--main-blue); }
-
-        /* Кнопка магазина */
-        #shop-toggle {
-            background: linear-gradient(135deg, var(--main-blue), #0ea5e9);
-            color: white; border: none; padding: 15px 50px; font-weight: bold;
-            border-radius: 15px; cursor: pointer; text-transform: uppercase;
-            letter-spacing: 1px; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
-            transition: 0.3s;
-        }
-        #shop-toggle:hover { transform: translateY(-3px); }
-
-        /* Магазин */
-        #shop-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; }
-        .oil-card { 
-            background: #0f172a; border: 1px solid #1e293b; padding: 20px 10px;
-            border-radius: 20px; text-align: center; transition: 0.3s;
-        }
-        .oil-card:active { border-color: var(--main-blue); background: #1e293b; }
-        .oil-card b { display: block; color: var(--main-blue); margin-bottom: 5px; font-size: 16px; }
-
-        #timer { color: #fbbf24; font-size: 14px; margin-bottom: 15px; font-weight: bold; }
-        .close-btn { margin-top: 40px; color: #64748b; cursor: pointer; }
+        .circle:active { transform: scale(0.95); }
+        .plane-icon { font-size: 100px; }
+        .info-panel { display: flex; gap: 20px; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 10px 30px; border-radius: 15px; }
+        .btn-main { background: #38bdf8; color: #000; border: none; padding: 15px 40px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        #shop-ui { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: #020617; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+        .oil-card { background: #1e293b; padding: 15px; margin: 5px; width: 80%; border-radius: 10px; text-align: center; }
     </style>
 </head>
 <body>
     <div id="stats">
-        <div id="league">Загрузка протокола...</div>
-        <div id="plane-name">---</div>
-        <div id="balance">0</div>
-        <div id="timer"></div>
-        
+        <div id="league">Бронзовая лига</div>
+        <div id="plane-name">МиГ-21</div>
+        <div id="balance">2567</div>
+        <div id="timer" style="color:#fbbf24; font-size: 12px; height: 15px;"></div>
+    </div>
+
+    <div class="circle" id="click-btn"><div class="plane-icon" id="plane-img">🛫</div></div>
+
+    <div class="info-panel">
+        <div>Клик: <b id="pwr">+2</b></div>
+        <div>В час: <b id="afk">500</b></div>
+    </div>
+
+    <button class="btn-main" onclick="openShop(true)">🛒 МАГАЗИН</button>
+
+    <div id="shop-ui">
+        <h2>МАСЛА</h2>
+        <div class="oil-card" onclick="buyOil(10000, 0.05)">ОБЫЧНОЕ (10к)</div>
+        <div class="oil-card" onclick="buyOil(100000, 0.1)">КАЧЕСТВЕННОЕ (100к)</div>
+        <button class="btn-main" style="margin-top:20px; background:#64748b" onclick="openShop(false)">ЗАКРЫТЬ</button>
+    </div>
+
+    <script>
+        // Принудительно ставим твои данные, если память пуста
+        let score = parseFloat(localStorage.getItem('sky_score')) || 2567;
+        let oilEnd = parseInt(localStorage.getItem('sky_oilEnd')) || 0;
+        let oilBonus = parseFloat(localStorage.getItem('sky_oilBonus')) || 0;
+
+        const lvls = [
+            { lim: 0, n: "МиГ-9", l: "🪵 Деревянная лига", p: 1, a: 100, c: "#8b4513", img: "✈️" },
+            { lim: 1000, n: "МиГ-21", l: "🥉 Бронзовая лига", p: 2, a: 500, c: "#cd7f32", img: "🛫" },
+            { lim: 10000, n: "МиГ-23", l: "🥉 Бронзовая лига", p: 3, a: 1500, c: "#cd7f32", img: "🛬" }
+        ];
+
+        function openShop(s) { document.getElementById('shop-ui').style.display = s ? 'flex' : 'none'; }
+
+        function update() {
+            let cur = lvls[0];
+            for (let i = lvls.length - 1; i >= 0; i--) if (score >= lvls[i].lim) { cur = lvls[i]; break; }
+            let now = Date.now();
+            let b = (now < oilEnd) ? oilBonus : 0;
+
+            document.getElementById('balance').innerText = Math.floor(score).toLocaleString();
+            document.getElementById('plane-name').innerText = cur.n;
+            document.getElementById('league').innerText = cur.l;
+            document.getElementById('league').style.color = cur.c;
+            document.getElementById('pwr').innerText = "+" + cur.p;
+            document.getElementById('afk').innerText = Math.floor(cur.a * (1 + b)).toLocaleString();
+            document.getElementById('plane-img').innerText = cur.img;
+            document.getElementById('click-btn').style.borderColor = cur.c;
+            
+            if (now < oilEnd) {
+                let d = Math.floor((oilEnd - now) / 1000);
+                document.getElementById('timer').innerText = `МАСЛО: ${Math.floor(d/60)}:${(d%60).toString().padStart(2,'0')}`;
+            } else document.getElementById('timer').innerText = "";
+            localStorage.setItem('sky_score', score);
+        }
+
+        document.getElementById('click-btn').onclick = () => {
+            let p = 1;
+            for (let i = lvls.length - 1; i >= 0; i--) if (score >= lvls[i].lim) { p = lvls[i].p; break; }
+            score += p; update();
+        };
+
+        function buyOil(p, b) { if(score >= p) { score -= p; oilEnd = Date.now() + 3600000; oilBonus = b; openShop(false); update(); } }
+
+        setInterval(() => {
+            let cur = lvls[0];
+            for (let i = lvls.length - 1; i >= 0; i--) if (score >= lvls[i].lim) { cur = lvls[i]; break; }
+            let b = (Date.now() < oilEnd) ? oilBonus : 0;
+            score += (cur.a * (1 + b)) / 3600; update();
+        }, 1000);
+
+        update();
+    </script>
+</body>
+</html>
