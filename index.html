@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Sky Capital</title>
+    <style>
+        body { background: #05070a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        #balance { font-size: 60px; font-weight: 900; color: #00d4ff; margin: 10px 0; }
+        .circle { width: 280px; height: 280px; border-radius: 50%; border: 10px solid #8b4513; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a2a3a, #000); cursor: pointer; transition: transform 0.05s; }
+        .circle:active { transform: scale(0.95); }
+        .circle img { width: 85%; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div id="balance">0</div>
+    <div class="circle" id="btn"><img src="https://i.imgur.com/uG9R2Ym.png"></div>
+    <script>
+        let score = 0;
+        document.getElementById('btn').onclick = () => {
+            score++;
+            document.getElementById('balance').innerText = score;
+        };
+    </script>
+</body>
+</html>
